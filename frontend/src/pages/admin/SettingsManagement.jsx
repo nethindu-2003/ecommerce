@@ -47,9 +47,9 @@ const SettingsManagement = () => {
         <div className="admin-page">
             <div className="admin-header">
                 <h1>System Settings</h1>
-                <p>Configure global parameters and store preferences.</p>
             </div>
-
+            <p>Configure global parameters and store preferences.</p>
+            <br></br>
             {feedback.msg && (
                 <div className={`feedback-alert ${feedback.type}`}>
                     {feedback.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
@@ -69,14 +69,14 @@ const SettingsManagement = () => {
                                     <span className="setting-description">System configuration key</span>
                                 </div>
                                 <div className="setting-action">
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         className="setting-input"
                                         value={s.value}
                                         onChange={(e) => handleValueChange(s.id, e.target.value)}
                                     />
-                                    <button 
-                                        className="save-btn" 
+                                    <button
+                                        className="save-btn"
                                         disabled={updating === s.id}
                                         onClick={() => saveSetting(s)}
                                     >

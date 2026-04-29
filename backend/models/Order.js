@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../db');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db.js';
 
 const Order = sequelize.define('Order', {
     totalAmount: { type: DataTypes.DECIMAL(10, 2), defaultValue: 0.0 },
@@ -9,4 +9,4 @@ const Order = sequelize.define('Order', {
     }
 });
 
-module.exports = Order;
+export default Order;

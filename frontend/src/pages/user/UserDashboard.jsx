@@ -31,9 +31,8 @@ const UserDashboard = () => {
         <div className="admin-page">
             <div className="admin-header">
                 <h1>Welcome Back</h1>
-                <p>Here's a summary of your recent shopping activity.</p>
             </div>
-
+            <p>Here's a summary of your recent shopping activity.</p><br></br>
             <div className="stats-grid">
                 <div className="stat-card">
                     <div className="stat-icon orders"><ShoppingBag /></div>

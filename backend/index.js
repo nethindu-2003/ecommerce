@@ -1,21 +1,22 @@
-const express = require('express');
-const AdminJS = require('adminjs');
-const AdminJSExpress = require('@adminjs/express');
-const adminOptions = require('./config/adminConfig');
-const { connectDB } = require('./db');
-const db = require('./models');
-const authRoutes = require('./routes/authRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const userRoutes = require('./routes/userRoutes');
-const bcrypt = require('bcrypt');
-const cors = require('cors');
-require('dotenv').config();
+import express from 'express';
+import AdminJS from 'adminjs';
+import AdminJSExpress from '@adminjs/express';
+import adminOptions from './config/adminConfig.js';
+import { connectDB } from './db.js';
+import db from './models/index.js';
+import authRoutes from './routes/authRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import bcrypt from 'bcrypt';
+import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 const start = async () => {
     try {
@@ -43,7 +44,8 @@ const start = async () => {
             {
                 resave: false,
                 saveUninitialized: true,
-                secret: process.env.SESSION_SECRET || 'session-secret'
+                secret: process.env.SESSION_SECRET || 'session-secret',
+                cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 7 days
             }
         );
 
@@ -56,7 +58,7 @@ const start = async () => {
         app.use('/api/user', userRoutes);
 
         // Sync Database and Start Server
-        await db.sequelize.sync({ alter: true });
+        await db.sequelize.sync();
         console.log('Database synced');
 
         app.listen(PORT, () => {

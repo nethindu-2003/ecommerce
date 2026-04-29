@@ -55,7 +55,7 @@ const AdminDashboard = () => {
                     <div className="stat-icon revenue"><DollarSign /></div>
                     <div className="stat-info">
                         <h3>Total Revenue</h3>
-                        <p className="value">${stats.totalRevenue}</p>
+                        <p className="value">LKR {stats.totalRevenue}</p>
                     </div>
                 </div>
 
@@ -76,11 +76,6 @@ const AdminDashboard = () => {
                 </div>
             </div>
 
-            <div className="admin-actions">
-                <button onClick={() => window.location.href = 'http://localhost:5000/admin'}>
-                    Open Database Manager (AdminJS)
-                </button>
-            </div>
         </div>
     );
 };

@@ -1,13 +1,14 @@
-const { User, Order, Product, Category, OrderItem } = require('../models');
-const { sequelize } = require('../db');
+import { User, Order, Product, Category, OrderItem, Setting } from '../models/index.js';
+import { sequelize } from '../db.js';
 
 // DASHBOARD STATS
 const getStats = async (req, res) => {
     try {
-        const totalUsers = await User.count();
+        const totalUsers = await User.count({ where: { role: 'user' } });
         const totalProducts = await Product.count();
         const totalOrders = await Order.count();
         const revenueResult = await Order.findAll({
+            where: { status: ['accepted', 'completed'] },
             attributes: [[sequelize.fn('SUM', sequelize.col('totalAmount')), 'totalRevenue']]
         });
         const totalRevenue = revenueResult[0].dataValues.totalRevenue || 0;
@@ -21,6 +22,7 @@ const getStats = async (req, res) => {
 const getUsers = async (req, res) => {
     try {
         const users = await User.findAll({ 
+            where: { role: 'user' },
             attributes: { exclude: ['password'] },
             order: [['createdAt', 'DESC']]
         });
@@ -45,8 +47,9 @@ const toggleUserStatus = async (req, res) => {
 const getUserOrders = async (req, res) => {
     try {
         const orders = await Order.findAll({
-            where: { userId: req.params.id },
-            include: [{ model: OrderItem, include: [Product] }],
+            where: { 
+                userId: req.params.id
+            },
             order: [['createdAt', 'DESC']]
         });
         res.json(orders);
@@ -96,11 +99,30 @@ const deleteProduct = async (req, res) => {
     }
 };
 
+const getProductOrders = async (req, res) => {
+    try {
+        const orderItems = await OrderItem.findAll({
+            where: { productId: req.params.id },
+            include: [{ 
+                model: Order, 
+                include: [{ model: User, attributes: ['email', 'name'] }] 
+            }],
+            order: [[Order, 'createdAt', 'DESC']]
+        });
+        res.json(orderItems);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching product orders' });
+    }
+};
+
 // ORDER MANAGEMENT
 const getOrders = async (req, res) => {
     try {
         const orders = await Order.findAll({
-            include: [{ model: User, attributes: ['email', 'name'] }],
+            include: [
+                { model: User, attributes: ['email', 'name', 'gender', 'role'] },
+                { model: OrderItem, include: [Product] }
+            ],
             order: [['createdAt', 'DESC']]
         });
         res.json(orders);
@@ -112,13 +134,42 @@ const getOrders = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
     try {
         const { status } = req.body;
-        const order = await Order.findByPk(req.params.id);
+        const order = await Order.findByPk(req.params.id, {
+            include: [{ model: OrderItem }]
+        });
+        
         if (!order) return res.status(404).json({ message: 'Order not found' });
+
+        // If status is changing to 'accepted', reduce stock
+        if (status === 'accepted' && order.status !== 'accepted') {
+            for (const item of order.OrderItems) {
+                const product = await Product.findByPk(item.productId);
+                if (product) {
+                    if (product.stock < item.quantity) {
+                        return res.status(400).json({ message: `Insufficient stock for ${product.name}` });
+                    }
+                    product.stock -= item.quantity;
+                    await product.save();
+                }
+            }
+        }
+
+        // If status is changing FROM 'accepted' to 'cancelled', restore stock
+        if (status === 'cancelled' && order.status === 'accepted') {
+            for (const item of order.OrderItems) {
+                const product = await Product.findByPk(item.productId);
+                if (product) {
+                    product.stock += item.quantity;
+                    await product.save();
+                }
+            }
+        }
+
         order.status = status;
         await order.save();
         res.json(order);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating order' });
+        res.status(500).json({ message: 'Error updating order', error: error.message });
     }
 };
 
@@ -175,7 +226,7 @@ const deleteCategory = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     getStats,
     getUsers,
     toggleUserStatus,
@@ -184,6 +235,7 @@ module.exports = {
     createProduct,
     updateProduct,
     deleteProduct,
+    getProductOrders,
     getOrders,
     updateOrderStatus,
     getSettings,

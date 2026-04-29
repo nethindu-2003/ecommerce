@@ -1,7 +1,7 @@
-const AdminJS = require('adminjs');
-const AdminJSSequelize = require('@adminjs/sequelize');
-const { User, Product, Category, Order, OrderItem, Setting } = require('../models');
-const { componentLoader, Components } = require('./componentLoader');
+import AdminJS from 'adminjs';
+import AdminJSSequelize from '@adminjs/sequelize';
+import { User, Product, Category, Order, OrderItem, Setting } from '../models/index.js';
+import { componentLoader, Components } from './componentLoader.js';
 
 AdminJS.registerAdapter(AdminJSSequelize);
 
@@ -103,13 +103,13 @@ const adminOptions = {
     dashboard: {
         component: Components.Dashboard,
         handler: async (request, response, context) => {
-            // Calculate System Summaries [cite: 35, 43]
-            const totalUsers = await User.count();
+            // Calculate System Summaries 
+            const totalUsers = await User.count({ where: { role: 'user' } });
             const totalOrders = await Order.count();
             const totalProducts = await Product.count();
 
-            // Calculate Revenue [cite: 35]
-            const orders = await Order.findAll();
+            // Calculate Revenue 
+            const orders = await Order.findAll({ where: { status: ['accepted', 'completed'] } });
             const totalRevenue = orders.reduce((sum, order) => sum + parseFloat(order.totalAmount || 0), 0);
 
             return {
@@ -124,4 +124,4 @@ const adminOptions = {
     },
 };
 
-module.exports = adminOptions;
+export default adminOptions;

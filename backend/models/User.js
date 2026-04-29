@@ -1,6 +1,6 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../db');
-const bcrypt = require('bcrypt');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db.js';
+import bcrypt from 'bcrypt';
 
 const User = sequelize.define('User', {
     email: {
@@ -20,7 +20,7 @@ const User = sequelize.define('User', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: true // Changed to true if you want to make it optional, or false for required
+        allowNull: true 
     },
     gender: {
         type: DataTypes.ENUM('male', 'female', 'other', 'prefer_not_to_say'),
@@ -51,4 +51,4 @@ const User = sequelize.define('User', {
     }
 });
 
-module.exports = User;
+export default User;

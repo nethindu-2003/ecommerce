@@ -39,6 +39,12 @@ const Login = () => {
                 return;
             }
 
+            if (selectedRole === 'user' && role !== 'user') {
+                setError('Access Denied: This is an admin account. Please select "Admin" to login.');
+                setLoading(false);
+                return;
+            }
+
             localStorage.setItem('token', token);
             localStorage.setItem('role', role);
             

@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const authController = require('../controllers/authController');
-const orderController = require('../controllers/orderController');
-const jwt = require('jsonwebtoken');
+import * as authController from '../controllers/authController.js';
+import * as orderController from '../controllers/orderController.js';
+import * as adminController from '../controllers/adminController.js';
+import jwt from 'jsonwebtoken';
 
 // Authentication Middleware
 const authenticate = (req, res, next) => {
@@ -28,4 +29,8 @@ router.patch('/profile', authController.updateProfile);
 router.get('/orders', orderController.getMyOrders);
 router.post('/orders', orderController.createOrder);
 
-module.exports = router;
+// Products & Categories (for shopping)
+router.get('/products', adminController.getProducts);
+router.get('/categories', adminController.getCategories);
+
+export default router;

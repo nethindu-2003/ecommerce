@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const { User } = require('../models');
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { User } from '../models/index.js';
 
 const login = async (req, res) => {
     try {
@@ -18,11 +18,16 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // 3. Generate JWT for session handling [cite: 9, 28]
+        // 3. Check if account is active 
+        if (!user.isActive) {
+            return res.status(403).json({ message: 'Your account has been deactivated. Please contact support.' });
+        }
+
+        // 4. Generate JWT for session handling 
         const token = jwt.sign(
             { id: user.id, role: user.role },
             process.env.JWT_SECRET,
-            { expiresIn: '1d' }
+            { expiresIn: '7d' }
         );
 
         res.json({
@@ -110,4 +115,4 @@ const updateProfile = async (req, res) => {
     }
 };
 
-module.exports = { login, register, getProfile, updateProfile };
+export { login, register, getProfile, updateProfile };

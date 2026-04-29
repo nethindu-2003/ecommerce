@@ -61,9 +61,8 @@ const UserSettings = () => {
         <div className="admin-page">
             <div className="admin-header">
                 <h1>Account Settings</h1>
-                <p>Manage your personal information and security preferences.</p>
             </div>
-
+            <p>Manage your personal information and security preferences.</p><br></br>
             {feedback.msg && (
                 <div className={`feedback-alert ${feedback.type}`} style={{ marginBottom: '24px' }}>
                     {feedback.type === 'success' ? <CheckCircle2 size={18} /> : <XCircle size={18} />}

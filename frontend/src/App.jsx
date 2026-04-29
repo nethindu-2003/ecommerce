@@ -13,10 +13,11 @@ import UserDashboard from './pages/user/UserDashboard';
 import UserOrders from './pages/user/UserOrders';
 import UserSettings from './pages/user/UserSettings';
 
-// Protected Route Component for any logged in user
-const ProtectedRoute = ({ children }) => {
+// User Only Route Component
+const UserRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  if (!token) return <Navigate to="/login" />;
+  const role = localStorage.getItem('role');
+  if (!token || role !== 'user') return <Navigate to="/login" />;
   return children;
 };
 
@@ -55,9 +56,9 @@ function App() {
         <Route 
           path="/" 
           element={
-            <ProtectedRoute>
+            <UserRoute>
               <UserLayout />
-            </ProtectedRoute>
+            </UserRoute>
           }
         >
           <Route path="dashboard" element={<UserDashboard />} />

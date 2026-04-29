@@ -1,8 +1,14 @@
-const { Order, OrderItem, Product } = require('../models');
+import { Order, OrderItem, Product } from '../models/index.js';
 
 const createOrder = async (req, res) => {
     try {
-        const { items } = req.body; // Array of { productId, quantity }
+        const { items } = req.body;
+        
+        // Prevent Admins from creating orders
+        if (req.user.role === 'admin') {
+            return res.status(403).json({ message: 'Administrators cannot place orders. Please use a customer account.' });
+        }
+
         let totalAmount = 0;
 
         // Calculate total and verify products
@@ -20,7 +26,7 @@ const createOrder = async (req, res) => {
             status: 'pending'
         });
 
-        // Create order items and update stock
+        // 3. Create order items (Stock will be deducted later by Admin)
         for (const item of items) {
             const product = await Product.findByPk(item.productId);
             await OrderItem.create({
@@ -29,8 +35,6 @@ const createOrder = async (req, res) => {
                 quantity: item.quantity,
                 price: product.price
             });
-            product.stock -= item.quantity;
-            await product.save();
         }
 
         res.status(201).json(order);
@@ -52,4 +56,4 @@ const getMyOrders = async (req, res) => {
     }
 };
 
-module.exports = { createOrder, getMyOrders };
+export { createOrder, getMyOrders };

@@ -1,9 +1,9 @@
-const { ComponentLoader } = require('adminjs');
+import { ComponentLoader } from 'adminjs';
 
 const componentLoader = new ComponentLoader();
 
 const Components = {
-    Dashboard: componentLoader.add('Dashboard', '../components/Dashboard'),
+    Dashboard: componentLoader.add('Dashboard', '../components/Dashboard.jsx'),
 };
 
-module.exports = { componentLoader, Components };
+export { componentLoader, Components };

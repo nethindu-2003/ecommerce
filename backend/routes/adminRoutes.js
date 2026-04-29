@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const adminController = require('../controllers/adminController');
-const jwt = require('jsonwebtoken');
+import * as adminController from '../controllers/adminController.js';
+import jwt from 'jsonwebtoken';
 
 // Middleware to verify Admin role
 const isAdmin = (req, res, next) => {
@@ -34,6 +34,7 @@ router.get('/products', adminController.getProducts);
 router.post('/products', adminController.createProduct);
 router.patch('/products/:id', adminController.updateProduct);
 router.delete('/products/:id', adminController.deleteProduct);
+router.get('/products/:id/orders', adminController.getProductOrders);
 
 // Order Management
 router.get('/orders', adminController.getOrders);
@@ -48,4 +49,4 @@ router.get('/categories', adminController.getCategories);
 router.post('/categories', adminController.createCategory);
 router.delete('/categories/:id', adminController.deleteCategory);
 
-module.exports = router;
+export default router;

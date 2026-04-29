@@ -1,10 +1,10 @@
-const { sequelize } = require('../db');
-const User = require('./User');
-const Category = require('./Category');
-const Product = require('./Product');
-const Order = require('./Order');
-const OrderItem = require('./OrderItem');
-const Setting = require('./Setting');
+import { sequelize } from '../db.js';
+import User from './User.js';
+import Category from './Category.js';
+import Product from './Product.js';
+import Order from './Order.js';
+import OrderItem from './OrderItem.js';
+import Setting from './Setting.js';
 
 // Relationships 
 Category.hasMany(Product, { foreignKey: 'categoryId' });
@@ -29,4 +29,5 @@ const db = {
     Setting
 };
 
-module.exports = db;
+export default db;
+export { User, Category, Product, Order, OrderItem, Setting };
